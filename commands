@@ -1,0 +1,6 @@
+load 'board.rb'
+board = Board.new
+king = King.new([0, 0], :white)
+board[[0, 0]] = king
+king.board = board
+king.moves
