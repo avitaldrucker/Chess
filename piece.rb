@@ -165,10 +165,10 @@ class Pawn < Piece
     new_pos = increment_position(current_position, delta)
 
     if valid_move?(new_pos)
-      possible_moves << new_pos
+      possible_moves << new_pos if board[new_pos].is_a?(NullPiece)
 
       if current_position.first == initial_row
-        possible_moves << two_space_move if valid_move?(two_space_move)
+        possible_moves << two_space_move if valid_move?(two_space_move) && board[two_space_move].is_a?(NullPiece)
       end
 
     end
