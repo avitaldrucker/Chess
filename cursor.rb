@@ -80,7 +80,11 @@ class Cursor
     when :return, :space
       cursor_pos
     when :left, :right, :up, :down
-      update_pos(MOVES[key]) if Board.in_bounds?(cursor_pos, MOVES[key])
+      delta_row, delta_col = MOVES[key]
+      cursor_row, cursor_col = cursor_pos
+      new_pos = [cursor_row + delta_row, cursor_col + delta_col]
+      update_pos(MOVES[key]) if Board.in_bounds?(new_pos)
+      nil
     when :ctrl_c
       Process.exit(0)
     end

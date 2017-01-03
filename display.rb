@@ -6,13 +6,14 @@ require_relative 'board'
 class Display
   attr_reader :board, :cursor
 
-  def initialize(board)
+  def initialize(board, debug = false)
     @board = board
     @cursor = Cursor.new([0, 0], board)
+    @debug = debug
   end
 
   def render
-    system('clear')
+    #system('clear') if gets.chomp == ""
     puts "  #{(0..7).to_a.join(" ")}"
     board.grid.each_with_index do |row, row_idx|
       print "#{row_idx} "
@@ -30,15 +31,31 @@ class Display
   end
 
   def move_cursor
-    while true
+    start_pos = nil
+    end_pos = nil
+    while start_pos.nil? && end_pos.nil?
       render
-      cursor.get_input
+      start_pos = cursor.get_input
+    end
+    p "valid moves: #{board[start_pos].valid_moves}" if @debug
+    p "in check? #{board.in_check?(board[start_pos].color)}"
+    p "checkmate? #{board.checkmate?(board[start_pos].color)}"
+    while end_pos.nil?
+      render
+      end_pos = cursor.get_input
+    end
+    board.move_piece(start_pos, end_pos)
+  end
+
+  def play
+    while true
+      move_cursor
     end
   end
 
 end
 
 if __FILE__ == $PROGRAM_NAME
-  display = Display.new(Board.new)
-  display.move_cursor
+  display = Display.new(Board.new, true)
+  display.play
 end

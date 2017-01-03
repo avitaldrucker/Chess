@@ -1,4 +1,5 @@
 require_relative 'piece'
+require 'byebug'
 
 module SteppingPiece
 
