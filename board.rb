@@ -71,8 +71,21 @@ class Board
   def move_piece(start_pos, end_pos)
     piece = self[start_pos]
 
-    raise NoPieceError if self.empty?(start_pos)
-    raise InvalidMoveError unless piece.can_move?(end_pos)
+    raise NoPieceError.new if self.empty?(start_pos)
+    raise InvalidMoveError.new unless piece.can_move?(end_pos)
+    raise MoveChecksKingError.new unless piece.valid_moves.include?(end_pos)
+
+    piece.current_position = end_pos
+    self[start_pos] = NullPiece.instance
+    self[end_pos] = piece
+    piece.board = self
+  end
+
+  def move_piece!(start_pos, end_pos)
+    piece = self[start_pos]
+
+    raise NoPieceError.new if self.empty?(start_pos)
+    raise InvalidMoveError.new unless piece.can_move?(end_pos)
 
     piece.current_position = end_pos
     self[start_pos] = NullPiece.instance
@@ -153,4 +166,7 @@ class NoPieceError < StandardError
 end
 
 class InvalidMoveError < StandardError
+end
+
+class MoveChecksKingError < StandardError
 end
