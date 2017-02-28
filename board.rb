@@ -68,8 +68,12 @@ class Board
     end
   end
 
-  def move_piece(start_pos, end_pos)
+  def move_piece(start_pos, end_pos, color)
     piece = self[start_pos]
+
+    unless pieces_with_color(color).include?(piece)
+      raise WrongColorMoveError.new
+    end
 
     raise NoPieceError.new if self.empty?(start_pos)
     raise InvalidMoveError.new unless piece.can_move?(end_pos)
@@ -169,4 +173,7 @@ class InvalidMoveError < StandardError
 end
 
 class MoveChecksKingError < StandardError
+end
+
+class WrongColorMoveError < StandardError
 end

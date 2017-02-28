@@ -63,7 +63,7 @@ class King < Piece
   include SteppingPiece
 
   def initialize(current_position, color)
-    @symbol = :K
+    @symbol = color == :white ? "♔" : "♚"
     super
   end
 
@@ -78,7 +78,7 @@ class Knight < Piece
   include SteppingPiece
 
   def initialize(current_position, color)
-    @symbol = :N
+    @symbol = color == :white ? "♘" : "♞"
     super
   end
 
@@ -94,7 +94,7 @@ class Queen < Piece
   include SlidingPiece
 
   def initialize(current_position, color)
-    @symbol = :Q
+    @symbol = color == :white ? "♕" : "♛"
     super
   end
 
@@ -112,7 +112,7 @@ class Bishop < Piece
   include SlidingPiece
 
   def initialize(current_position, color)
-    @symbol = :B
+    @symbol = color == :white ? "♗" : "♝"
     super
   end
 
@@ -126,7 +126,7 @@ class Rook < Piece
   include SlidingPiece
 
   def initialize(current_position, color)
-    @symbol = :R
+    @symbol = color == :white ? "♖" : "♜"
     super
   end
 
@@ -141,7 +141,7 @@ class NullPiece < Piece
   include Singleton
 
   def initialize
-    @symbol = :_
+    @symbol = "_"
     super
   end
 
@@ -153,7 +153,7 @@ class Pawn < Piece
 
   def initialize(current_position, color)
     super
-    @symbol = :p
+    @symbol = color == :white ? "♙" : "♟"
     @initial_row = color == :black ? 1 : 6
     @attack_deltas = color == :black ? [[1, -1], [1, 1]] : [[-1, -1], [-1, 1]]
     @delta = color == :black ? [1, 0] : [-1, 0]
