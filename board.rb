@@ -1,5 +1,12 @@
 require_relative 'piece_classes/piece'
-require 'byebug'
+require_relative 'piece_classes/bishop'
+require_relative 'piece_classes/king'
+require_relative 'piece_classes/knight'
+require_relative 'piece_classes/nullpiece'
+require_relative 'piece_classes/pawn'
+require_relative 'piece_classes/queen'
+require_relative 'piece_classes/rook'
+
 
 class Board
 
@@ -8,8 +15,6 @@ class Board
   end
 
   def self.default_grid
-    grid = []
-
     grid = Array.new(8) { Array.new(8) }
 
     grid.each_with_index do |row, row_idx|
@@ -71,11 +76,13 @@ class Board
   def move_piece(start_pos, end_pos, color)
     piece = self[start_pos]
 
+
+    raise NoPieceError.new if self.empty?(start_pos)
+
     unless pieces_with_color(color).include?(piece)
       raise WrongColorMoveError.new
     end
 
-    raise NoPieceError.new if self.empty?(start_pos)
     raise InvalidMoveError.new unless piece.can_move?(end_pos)
     raise MoveChecksKingError.new unless piece.valid_moves.include?(end_pos)
 
@@ -164,16 +171,47 @@ class Board
     self[pos].is_a?(NullPiece)
   end
 
+  def each_with_index(&prc)
+    self.grid.each_with_index do |row, row_idx|
+      row.each_with_index do |el, col_idx|
+        prc.call(self.grid[row_idx][col_idx], [row_idx, col_idx])
+      end
+    end
+  end
+
 end
 
 class NoPieceError < StandardError
+  def initialize
+    @message = "There is no piece at that position! Select a piece."
+    super(@message)
+  end
+  attr_reader :message
 end
 
-class InvalidMoveError < StandardError
+class ChessError < StandardError
 end
 
-class MoveChecksKingError < StandardError
+class InvalidMoveError < ChessError
+  def initialize
+    @message = "This piece can't move that way! Try again."
+    super(@message)
+  end
+  attr_reader :message
 end
 
-class WrongColorMoveError < StandardError
+class MoveChecksKingError < ChessError
+  def initialize
+    @message = "That move would leave your king in check!"
+    super(@message)
+  end
+  attr_reader :message
+end
+
+class WrongColorMoveError < ChessError
+  def initialize
+    @message = "That's not your piece! You can't move that. Try again."
+    super(@message)
+  end
+  attr_reader :message
 end

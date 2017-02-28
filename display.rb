@@ -1,6 +1,5 @@
 require 'colorize'
 require_relative 'cursor'
-require 'byebug'
 require_relative 'board'
 
 class Display
@@ -15,18 +14,14 @@ class Display
   def render(name)
     system('clear')
     puts "Make your move, #{name}"
-    board.grid.each_with_index do |row, row_idx|
-      row.each_with_index do |piece, col_idx|
-        piece_representation = piece.nil? ? "_" : piece.symbol
-        if [row_idx, col_idx] == cursor.cursor_pos
-          print piece_representation.red
-        else
-          print piece_representation
-        end
-        print " "
-      end
-      puts ""
+
+    board.each_with_index do |piece, pos|
+      row, col = pos
+      piece_display = piece ? piece.symbol : "_"
+      print pos == cursor.cursor_pos ? piece_display.red : piece_display
+      col == 7 ? (puts "") : (print " ")
     end
+
   end
 
   def get_input
