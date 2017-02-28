@@ -32,7 +32,8 @@ MOVES = {
 
 class Cursor
 
-  attr_reader :cursor_pos, :board
+  attr_reader :board
+  attr_accessor :cursor_pos
 
   def initialize(cursor_pos, board)
     @cursor_pos = cursor_pos
@@ -83,6 +84,6 @@ class Cursor
   def update_pos(delta)
     cursor_row, cursor_col = cursor_pos
     delta_row, delta_col = delta
-    @cursor_pos = [cursor_row + delta_row, cursor_col + delta_col]
+    self.cursor_pos = [cursor_row + delta_row, cursor_col + delta_col]
   end
 end

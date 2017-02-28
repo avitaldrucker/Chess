@@ -53,6 +53,5 @@ class Game
 end
 
 if __FILE__ == $PROGRAM_NAME
-  game = Game.new("Avital", "Drucker")
-  game.play
+  Game.new("Avital", "Drucker").play
 end

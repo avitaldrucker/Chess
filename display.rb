@@ -5,10 +5,9 @@ require_relative 'board'
 class Display
   attr_reader :board, :cursor
 
-  def initialize(board, debug = false)
+  def initialize(board)
     @board = board
     @cursor = Cursor.new([0, 0], board)
-    @debug = debug
   end
 
   def render(name)

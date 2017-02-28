@@ -10,19 +10,21 @@ class HumanPlayer
   end
 
   def play_turn
-    start_pos = nil
-    end_pos = nil
-    while start_pos.nil? && end_pos.nil?
-      display.render(name)
-      start_pos = display.get_input
-    end
-
-    while end_pos.nil?
-      display.render(name)
-      end_pos = display.get_input
-    end
-
+    start_pos = prompt_for_pos
+    end_pos = prompt_for_pos
+    
     [start_pos, end_pos]
+  end
+
+  def prompt_for_pos
+    pos = nil
+
+    until pos
+      display.render(name)
+      pos = display.get_input
+    end
+
+    pos
   end
 
   private

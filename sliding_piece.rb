@@ -1,4 +1,5 @@
 module SlidingPiece
+
   DIRECTIONS = {
     up:      [-1,  0],
     down:    [1,   0],
@@ -11,22 +12,28 @@ module SlidingPiece
   }
 
   def moves
-    possible_positions = []
+    positions = []
 
     move_dirs.each do |direction|
-      new_pos = increment_position(current_position, DIRECTIONS[direction])
-
-      while valid_move?(new_pos)
-        possible_positions << new_pos
-        break if board[new_pos].color == opponent_color
-        delta = DIRECTIONS[direction]
-        new_pos = increment_position(new_pos, delta)
-      end
-
+      delta = DIRECTIONS[direction]
+      positions.concat(positions_in_direction(delta))
     end
-    possible_positions
+
+    positions
   end
 
+  def positions_in_direction(delta)
+    positions = []
 
+    new_pos = increment_position(current_position, delta)
+
+    while valid_move?(new_pos)
+      positions << new_pos
+      break if board[new_pos].color == opponent_color
+      new_pos = increment_position(new_pos, delta)
+    end
+
+    positions
+  end
 
 end
