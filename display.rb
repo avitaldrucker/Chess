@@ -15,9 +15,7 @@ class Display
   def render(name)
     system('clear')
     puts "Make your move, #{name}"
-    #puts "  #{(0..7).to_a.join(" ")}"
     board.grid.each_with_index do |row, row_idx|
-    #  print "#{row_idx} "
       row.each_with_index do |piece, col_idx|
         piece_representation = piece.nil? ? "_" : piece.symbol
         if [row_idx, col_idx] == cursor.cursor_pos
@@ -35,9 +33,4 @@ class Display
     cursor.get_input
   end
 
-end
-
-if __FILE__ == $PROGRAM_NAME
-  display = Display.new(Board.new, true)
-  display.play
 end

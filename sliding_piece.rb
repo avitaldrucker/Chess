@@ -1,5 +1,3 @@
-require 'byebug'
-
 module SlidingPiece
   DIRECTIONS = {
     up:      [-1,  0],
