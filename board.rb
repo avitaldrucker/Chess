@@ -10,9 +10,16 @@ require_relative 'piece_classes/rook'
 
 class Board
 
+  ORDERED_PIECES = [
+    Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook
+  ]
+
+  ROW_COLORS = { 0 => :black, 1 => :black, 6 => :white, 7 => :white }
+
   def self.empty_grid
     Array.new(8) { Array.new(8) }
   end
+
 
   def self.default_grid
     grid = Array.new(8) { Array.new(8) }
@@ -29,25 +36,11 @@ class Board
 
   def self.populate_tile(pos)
     row, col = pos
-    row_colors = { 0 => :black, 1 => :black, 6 => :white, 7 => :white }
 
     if row == 0 || row == 7
-      piece_symbol = Piece::ORDERED_PIECES[col]
-
-      case piece_symbol
-      when :rook
-        Rook.new(pos, row_colors[row])
-      when :knight
-        Knight.new(pos, row_colors[row])
-      when :bishop
-        Bishop.new(pos, row_colors[row])
-      when :queen
-        Queen.new(pos, row_colors[row])
-      when :king
-        King.new(pos, row_colors[row])
-      end
+      ORDERED_PIECES[col].new(pos, ROW_COLORS[row])
     elsif row == 1 || row == 6
-      Pawn.new(pos, row_colors[row])
+      Pawn.new(pos, ROW_COLORS[row])
     else
       NullPiece.instance
     end
@@ -76,8 +69,7 @@ class Board
   def move_piece(start_pos, end_pos, color)
     piece = self[start_pos]
 
-
-    raise NoPieceError.new if self.empty?(start_pos)
+    raise NoPieceError.new if empty?(start_pos)
 
     unless pieces_with_color(color).include?(piece)
       raise WrongColorMoveError.new
@@ -86,10 +78,11 @@ class Board
     raise InvalidMoveError.new unless piece.can_move?(end_pos)
     raise MoveChecksKingError.new unless piece.valid_moves.include?(end_pos)
 
-    piece.current_position = end_pos
+
     self[start_pos] = NullPiece.instance
+    
+    piece.current_position = end_pos
     self[end_pos] = piece
-    piece.board = self
   end
 
   def move_piece!(start_pos, end_pos)

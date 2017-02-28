@@ -5,9 +5,7 @@ require_relative '../board'
 
 class Piece
 
-  ORDERED_PIECES = [
-    :rook, :knight, :bishop, :queen, :king, :bishop, :knight, :rook
-  ]
+
 
   attr_reader :symbol, :color, :opponent_color
   attr_accessor :board, :current_position
