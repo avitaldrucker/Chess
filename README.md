@@ -1,6 +1,11 @@
 #Chess#
 
-I created this two-player game through Ruby on the backend and React and Redux on the frontend. Drag and drop pieces to capture the opponent's king.
+I created this two-player game through Ruby on the backend and React and Redux on the frontend.
+
+#How to Run the Game#
+1. Clone this repository, or download it as a ZIP.
+2. Navigate to the Chess directory where you downloaded the repository.
+3. In your terminal, type and enter 'ruby game.rb'.
 
 ##Technical Implementation Details##
 
