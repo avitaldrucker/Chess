@@ -1,11 +1,9 @@
 #Chess#
 
-I created this two-player game through Ruby.
-
 ##How to Run the Game##
 1. Clone this repository, or download it as a ZIP.
 2. Navigate to the Chess directory where you downloaded the repository.
-3. In your terminal, type and enter 'ruby game.rb'.
+3. In your terminal, type and enter `ruby game.rb`.
 
 ##Technical Implementation Details##
 
@@ -27,9 +25,9 @@ def move_into_check?(end_pos)
 end
 ```
 
-Board#move_piece! makes a move without checking whether a move leads to a king being checked, whereas Board#move_piece, which actually moves piece on the played board, does.
+`Board#move_piece!` makes a move without checking whether a move leads to a king being checked, whereas `Board#move_piece`, which actually moves piece on the played board, does.
 
 ###Future Directions for the Project###
-I am in the process of implementing a frontend for this project through React, with state managed by Redux. The frontend will send AJAX requests to create and update the game, and manage player interaction, while a Rails app will save the game as a YAML string in a database and manage game logic.
+I plan to implement a frontend for this project through React, with state managed by Redux. This involves reprogramming the game in JavaScript.
 
 I also plan to  implement a computer AI to play against a player, using a minimax algorithm and tree nodes.
