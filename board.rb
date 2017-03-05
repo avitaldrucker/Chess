@@ -7,7 +7,6 @@ require_relative 'piece_classes/pawn'
 require_relative 'piece_classes/queen'
 require_relative 'piece_classes/rook'
 require_relative 'errors'
-require 'byebug'
 
 
 class Board
