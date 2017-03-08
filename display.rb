@@ -15,12 +15,33 @@ class Display
     puts "Make your move, #{name}"
 
     board.each_with_index do |piece, pos|
-      row, col = pos
-      piece_display = piece ? piece.symbol : "_"
-      print pos == cursor.cursor_pos ? piece_display.red : piece_display
-      col == 7 ? (puts "") : (print " ")
+      print piece_display(piece, pos)
+      puts "" if pos[1] == 7
     end
+  end
 
+  def piece_display(piece, pos)
+    " #{piece.symbol} ".colorize(background: background_color(pos))
+  end
+
+  def background_color(pos)
+    if pos == cursor.start_pos
+      :light_blue
+    elsif pos == cursor.cursor_pos
+      :red
+    else
+      unselected_piece_color(pos)
+    end
+  end
+
+  def unselected_piece_color(pos)
+    row, col = pos
+
+    if row.even?
+      col.even? ? :white : :light_black
+    else
+      col.odd? ? :white : :light_black
+    end
   end
 
   def get_input

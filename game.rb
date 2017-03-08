@@ -53,5 +53,10 @@ class Game
 end
 
 if __FILE__ == $PROGRAM_NAME
-  Game.new("Tommy", "Drucker").play
+  system('clear')
+  puts "Player 1, type your name and hit enter. Your pieces are white."
+  name1 = gets.chomp
+  puts "Player 2, type your name and hit enter. Your pieces are black."
+  name2 = gets.chomp
+  Game.new(name1, name2).play
 end

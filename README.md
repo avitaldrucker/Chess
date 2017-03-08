@@ -5,6 +5,8 @@
 2. Navigate to the Chess directory where you downloaded the repository.
 3. In your terminal, type and enter `ruby game.rb`.
 
+![Screenshot](/docs/chess_screenshot.png)
+
 ##Technical Implementation Details##
 
 The game logic makes use of Game, Board, and Display classes, as well as Piece class. The various chess pieces inherit from Piece. I dealt with empty spots by populating them will NullPiece instances, which uses the Singleton module and inherits from Piece. Functionality for sliding pieces such as queens and bishops, and stepping pieces such as kings and knights, was implemented by including Slideable and Steppable modules respectively in Piece subclasses.
