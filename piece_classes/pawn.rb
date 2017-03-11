@@ -17,9 +17,15 @@ class Pawn < Piece
     @delta = color == :black ? [1, 0] : [-1, 0]
   end
 
-  def pawn_promotion_necessary?
-    self.color == :white && self.current_position[0] == 0 ||
-    self.color == :black && self.current_position[0] == 7
+  def attack_positions
+    attack_positions = attack_deltas.map do |delta|
+      increment_position(current_position, delta)
+    end
+
+    attack_positions.select do |pos|
+      valid_move?(pos) && board[pos].color == opponent_color
+    end
+
   end
 
   def moves
@@ -43,20 +49,14 @@ class Pawn < Piece
     increment_position(current_position, delta)
   end
 
+  def pawn_promotion_necessary?
+    self.color == :white && self.current_position[0] == 0 ||
+    self.color == :black && self.current_position[0] == 7
+  end
+
   def two_space_move
     new_pos = increment_position(current_position, delta)
     increment_position(new_pos, delta)
-  end
-
-  def attack_positions
-    attack_positions = attack_deltas.map do |delta|
-      increment_position(current_position, delta)
-    end
-
-    attack_positions.select do |pos|
-      valid_move?(pos) && board[pos].color == opponent_color
-    end
-
   end
 
 end

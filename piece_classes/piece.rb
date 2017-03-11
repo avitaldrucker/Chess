@@ -8,22 +8,6 @@ class Piece
   attr_reader :symbol, :color, :opponent_color
   attr_accessor :board, :current_position
 
-  def initialize(current_position = nil, color = nil)
-    @current_position = current_position
-    @color = color
-    @opponent_color = color == :white ? :black : :white if color
-  end
-
-  def valid_moves
-    moves.reject { |move| move_into_check?(move) }
-  end
-
-  def move_into_check?(end_pos)
-    board_copy = board.dup
-    board_copy.move_piece!(current_position, end_pos)
-    board_copy.in_check?(color)
-  end
-
   def self.dup(piece)
     if piece.is_a?(NullPiece)
       new_piece = piece
@@ -35,27 +19,10 @@ class Piece
     new_piece
   end
 
-  def pawn_promotion_necessary?
-    false
-  end
-
-  def can_move?(end_pos)
-    moves.include?(end_pos)
-  end
-
-  def valid_move?(pos)
-    return false unless pos && Board.in_bounds?(pos)
-    return false if board[pos].color == self.color
-
-    true
-  end
-
-  def valid_moves?
-    valid_moves.length > 0
-  end
-
-  def no_check_move?(pos)
-    valid_moves.include?(pos)
+  def initialize(current_position = nil, color = nil)
+    @current_position = current_position
+    @color = color
+    @opponent_color = color == :white ? :black : :white if color
   end
 
   def increment_position(position, delta)
@@ -63,6 +30,39 @@ class Piece
     pos_row, pos_col = position
 
     [delta_row + pos_row, delta_col + pos_col]
+  end
+
+  def can_move?(end_pos)
+    moves.include?(end_pos)
+  end
+
+  def move_into_check?(end_pos)
+    board_copy = board.dup
+    board_copy.move_piece!(current_position, end_pos)
+    board_copy.in_check?(color)
+  end
+
+  def no_check_move?(pos)
+    valid_moves.include?(pos)
+  end
+
+  def pawn_promotion_necessary?
+    false
+  end
+
+  def valid_moves
+    moves.reject { |move| move_into_check?(move) }
+  end
+
+  def valid_moves?
+    valid_moves.length > 0
+  end
+
+  def valid_move?(pos)
+    return false unless pos && Board.in_bounds?(pos)
+    return false if board[pos].color == self.color
+
+    true
   end
 
 end

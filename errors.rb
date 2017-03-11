@@ -2,13 +2,6 @@ class ChessError < StandardError
   attr_reader :message
 end
 
-class NoPieceError < ChessError
-  def initialize
-    @message = "There is no piece at that position! Select a piece."
-    super(@message)
-  end
-end
-
 class InvalidMoveError < ChessError
   def initialize
     @message = "This piece can't move that way! Try again."
@@ -19,6 +12,13 @@ end
 class MoveChecksKingError < ChessError
   def initialize
     @message = "That move would leave your king in check!"
+    super(@message)
+  end
+end
+
+class NoPieceError < ChessError
+  def initialize
+    @message = "There is no piece at that position! Select a piece."
     super(@message)
   end
 end

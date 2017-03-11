@@ -15,29 +15,31 @@ class Game
     @current_player = @player1
   end
 
+  def over?
+    board.checkmate?(:white) || board.checkmate?(:black)
+  end
+
   def play
     play_turn until over?
     puts "#{winner.name} wins!"
   end
 
   def play_turn
-    begin
-      start_pos, end_pos = current_player.play_turn
-      board.move_piece(start_pos, end_pos, current_player.color)
-      if board.pawn_promotion_necessary?(end_pos)
-        begin
-          board.promote_pawn(*current_player.prompt_promote_piece(end_pos));
-        rescue ChessError => e
-          puts e.message
-          retry
-        end
-      end
+    start_pos, end_pos = current_player.play_turn
+    board.move_piece(start_pos, end_pos, current_player.color)
+    promote_pawn(end_pos) if board.pawn_promotion_necessary?(end_pos)
+    switch_players!
     rescue ChessError => e
       puts e.message
       sleep(2)
       retry
-    end
-    switch_players!
+  end
+
+  def promote_pawn
+    board.promote_pawn(*current_player.prompt_promote_piece(end_pos));
+    rescue ChessError => e
+      puts e.message
+      retry
   end
 
   def switch_players!
@@ -50,10 +52,6 @@ class Game
     elsif board.checkmate?(:black)
       player1
     end
-  end
-
-  def over?
-    board.checkmate?(:white) || board.checkmate?(:black)
   end
 
   private
