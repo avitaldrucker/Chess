@@ -12,7 +12,7 @@ class HumanPlayer
   def play_turn
     start_pos = prompt_for_pos
     end_pos = prompt_for_pos
-    
+
     [start_pos, end_pos]
   end
 
@@ -25,6 +25,12 @@ class HumanPlayer
     end
 
     pos
+  end
+
+  def prompt_promote_piece(pos)
+    puts "What piece would you like to promote your pawn at #{pos} to?"
+    puts "Type Queen, Knight, Rook, or Bishop, and then press enter."
+    [gets.chomp.capitalize, pos]
   end
 
   private

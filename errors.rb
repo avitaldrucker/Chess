@@ -29,3 +29,10 @@ class WrongColorMoveError < ChessError
     super(@message)
   end
 end
+
+class WrongPieceInputError < ChessError
+  def initialize
+    @message = "That is not a valid piece name."
+    super(@message)
+  end
+end

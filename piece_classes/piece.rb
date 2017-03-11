@@ -1,6 +1,7 @@
 require_relative '../sliding_piece'
 require_relative '../stepping_piece'
 require_relative '../board'
+require 'byebug'
 
 class Piece
 
@@ -32,6 +33,10 @@ class Piece
     end
 
     new_piece
+  end
+
+  def pawn_promotion_necessary?
+    false
   end
 
   def can_move?(end_pos)

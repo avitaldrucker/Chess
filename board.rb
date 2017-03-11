@@ -19,6 +19,13 @@ class Board
     0 => :black, 1 => :black, 6 => :white, 7 => :white
   }
 
+  PIECES_FROM_INPUT = {
+    "Queen" => Queen,
+    "Knight" => Knight,
+    "Rook" => Rook,
+    "Bishop" => Bishop
+  }
+
   def self.empty_grid
     Array.new(8) { Array.new(8) }
   end
@@ -34,6 +41,23 @@ class Board
     end
 
     grid
+  end
+
+  def pawn_promotion_necessary?(pos)
+    self[pos].pawn_promotion_necessary?
+  end
+
+  def promote_pawn(piece_input, pos)
+    color = self[pos].color
+
+    piece_class = PIECES_FROM_INPUT[piece_input]
+    raise WrongPieceInputError.new unless piece_class
+
+
+    piece = piece_class.new(pos, color)
+
+    self[pos] = piece
+    piece.board = self
   end
 
   def self.populate_tile(pos)

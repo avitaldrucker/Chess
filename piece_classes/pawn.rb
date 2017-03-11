@@ -17,6 +17,11 @@ class Pawn < Piece
     @delta = color == :black ? [1, 0] : [-1, 0]
   end
 
+  def pawn_promotion_necessary?
+    self.color == :white && self.current_position[0] == 0 ||
+    self.color == :black && self.current_position[0] == 7
+  end
+
   def moves
     possible_moves = []
 

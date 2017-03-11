@@ -62,7 +62,7 @@ class Cursor
       input << STDIN.read_nonblock(2) rescue nil
     end
 
-    STDIN.echo = true
+    # STDIN.echo = true
     STDIN.cooked!
 
     return input

@@ -1,6 +1,7 @@
 require_relative 'board'
 require_relative 'human_player'
 require_relative 'cursor'
+require 'byebug'
 
 class Game
   attr_accessor :current_player
@@ -21,13 +22,21 @@ class Game
 
   def play_turn
     begin
-      board.move_piece(*current_player.play_turn, current_player.color)
+      start_pos, end_pos = current_player.play_turn
+      board.move_piece(start_pos, end_pos, current_player.color)
+      if board.pawn_promotion_necessary?(end_pos)
+        begin
+          board.promote_pawn(*current_player.prompt_promote_piece(end_pos));
+        rescue ChessError => e
+          puts e.message
+          retry
+        end
+      end
     rescue ChessError => e
       puts e.message
       sleep(2)
       retry
     end
-
     switch_players!
   end
 
