@@ -94,15 +94,15 @@ class Board
   end
 
   def empty?(pos)
-    if pos.is_a?(Array)
+    if pos.is_a?(Array) && pos[1].is_a?(Fixnum)
       self[pos].is_a?(NullPiece)
-    else grid[pos].all? { |tile| tile.is_a?(NullPiece) }
+    else grid[pos[0]][pos[1]].all? { |tile| tile.is_a?(NullPiece) }
     end
   end
 
   def in_check?(color)
     king = Piece.find_piece(self, King, { color: color })
-
+    return true unless king
     pieces_colored(king.opponent_color).any? do |piece|
       piece.can_move?(king.position)
     end
@@ -134,12 +134,12 @@ class Board
   end
 
   def move_rook_for_castling(king_start_pos, king_end_pos)
-    if end_pos[1] - start_pos[1] > 0
-      pos = [end_pos[0], 7]
-      rook_end_pos = [end_pos[0], end_pos[1] - 1]
+    if king_end_pos[1] - king_start_pos[1] > 0
+      pos = [king_end_pos[0], 7]
+      rook_end_pos = [king_end_pos[0], king_end_pos[1] - 1]
     else
-      col = [end_pos[0], 0]
-      rook_end_pos = [end_pos[0], end_pos[1] + 1]
+      pos = [king_end_pos[0], 0]
+      rook_end_pos = [king_end_pos[0], king_end_pos[1] + 1]
     end
 
     rook_to_move = Piece.find_piece(self, Rook, { pos: pos })

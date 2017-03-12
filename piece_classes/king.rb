@@ -23,10 +23,17 @@ class King < Piece
     range = dir === :left ? (0...col) : (col + 1..7)
 
     rook = Piece.find_piece(self.board, Rook, { row: row })
-
     !self.moved && rook && self.color == rook.color && !rook.moved &&
-      board.empty?(col + 1...rook.position[1]) &&
-      skipped_spots_safe?
+      board.empty?(skipped_spots(dir)) && skipped_spots_safe?
+  end
+
+  def skipped_spots(dir)
+    if dir == :left
+      [self.position[0], 1...self.position[1]]
+    else
+      [self.position[0], (self.position[1] + 1)...7]
+    end
+
   end
 
   def skipped_spots_safe?
@@ -39,7 +46,9 @@ class King < Piece
   def move_dirs
     moves = TRADITIONAL_MOVE_DIRS
     moves = moves + [[0, -2]] if castling_possible?(:left)
+    # debugger unless castling_possible?(:left)
     moves = moves + [[0, 2]] if castling_possible?(:right)
+    # debugger unless castling_possible?(:left)
 
     moves
   end

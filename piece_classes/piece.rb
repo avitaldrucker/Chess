@@ -13,11 +13,13 @@ class Piece
     board.each_with_index do |tile, pos|
       row, col = pos
       if tile.is_a?(piece_class) && same?(options[:row], row) &&
-        same?(options[:pos], col) &&
+        same?(options[:pos], pos) &&
         same?(options[:color], tile.color)
         return tile
       end
     end
+
+    nil
   end
 
   def self.same?(value, desired_value)
