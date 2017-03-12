@@ -1,28 +1,52 @@
 require_relative '../sliding_piece'
 require_relative '../stepping_piece'
 require_relative '../board'
-require 'byebug'
+require_relative '../errors'
 
 class Piece
 
-  attr_reader :symbol, :color, :opponent_color
-  attr_accessor :board, :current_position
+  attr_reader :symbol, :color, :opponent_color, :position
+  attr_accessor :board, :moved
+
+  def self.find_piece(board, piece_class, options)
+
+    board.each_with_index do |tile, pos|
+      row, col = pos
+      if (tile && tile.is_a?(piece_class) &&
+        (!options[:row] || row == options[:row]) &&
+        (!options[:col_range] || options[:col_range].include?(col)) &&
+        (!options[:color] || options[:color] == tile.color))
+        return tile
+      end
+    end
+
+  end
 
   def self.dup(piece)
-    if piece.is_a?(NullPiece)
-      new_piece = piece
-    else
-      new_piece = piece.dup
-      new_piece.current_position = piece.current_position.dup
-    end
+    return piece if piece.is_a?(NullPiece)
+    new_piece = piece.dup
+    new_piece.position = piece.position.dup
 
     new_piece
   end
 
-  def initialize(current_position = nil, color = nil)
-    @current_position = current_position
+  def self.validate_piece_move(end_pos, piece, current_color)
+    raise NoPieceError.new if piece.is_a?(NullPiece)
+    raise WrongColorMoveError.new unless piece.color == current_color
+    raise InvalidMoveError.new unless piece.can_move?(end_pos)
+    raise MoveChecksKingError.new unless piece.no_check_move?(end_pos)
+  end
+
+  def initialize(position = nil, color = nil)
+    @position = position
     @color = color
     @opponent_color = color == :white ? :black : :white if color
+    @moved = false
+  end
+
+  def position=(pos)
+    @position = pos
+    @moved = true
   end
 
   def increment_position(position, delta)
@@ -38,7 +62,7 @@ class Piece
 
   def move_into_check?(end_pos)
     board_copy = board.dup
-    board_copy.move_piece!(current_position, end_pos)
+    board_copy.move_piece!(position, end_pos)
     board_copy.in_check?(color)
   end
 

@@ -2,9 +2,10 @@ require_relative 'knight'
 require_relative '../stepping_piece';
 
 class Knight < Piece
+
   include SteppingPiece
 
-  def initialize(current_position, color)
+  def initialize(position, color)
     @symbol = color == :white ? "♘" : "♞"
     super
   end

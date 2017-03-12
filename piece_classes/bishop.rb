@@ -2,9 +2,10 @@ require_relative 'piece';
 require_relative '../sliding_piece';
 
 class Bishop < Piece
+
   include SlidingPiece
 
-  def initialize(current_position, color)
+  def initialize(position, color)
     @symbol = color == :white ? "♗" : "♝"
     super
   end
@@ -12,4 +13,5 @@ class Bishop < Piece
   def move_dirs
     [:diag_ul, :diag_ur, :diag_dl, :diag_dr]
   end
+
 end

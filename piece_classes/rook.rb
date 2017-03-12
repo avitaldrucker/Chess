@@ -2,9 +2,10 @@ require_relative 'piece'
 require_relative '../sliding_piece'
 
 class Rook < Piece
+
   include SlidingPiece
 
-  def initialize(current_position, color)
+  def initialize(position, color)
     @symbol = color == :white ? "♖" : "♜"
     super
   end

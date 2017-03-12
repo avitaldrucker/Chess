@@ -1,3 +1,5 @@
+require 'byebug'
+
 module SlidingPiece
 
   DIRECTIONS = {
@@ -14,6 +16,8 @@ module SlidingPiece
   def moves
     positions = []
 
+
+
     move_dirs.each do |direction|
       delta = DIRECTIONS[direction]
       positions.concat(positions_in_direction(delta))
@@ -25,7 +29,7 @@ module SlidingPiece
   def positions_in_direction(delta)
     positions = []
 
-    new_pos = increment_position(current_position, delta)
+    new_pos = increment_position(position, delta)
 
     while valid_move?(new_pos)
       positions << new_pos

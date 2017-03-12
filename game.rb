@@ -4,6 +4,7 @@ require_relative 'cursor'
 require 'byebug'
 
 class Game
+
   attr_accessor :current_player
 
   def initialize(player1, player2)
@@ -35,7 +36,7 @@ class Game
       retry
   end
 
-  def promote_pawn
+  def promote_pawn(end_pos)
     board.promote_pawn(*current_player.prompt_promote_piece(end_pos));
     rescue ChessError => e
       puts e.message

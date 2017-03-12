@@ -6,38 +6,28 @@ require_relative 'piece_classes/nullpiece'
 require_relative 'piece_classes/pawn'
 require_relative 'piece_classes/queen'
 require_relative 'piece_classes/rook'
-require_relative 'errors'
-
 
 class Board
+
   attr_reader :grid
 
-  BACKROW_PIECES = [
-    Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook
-  ]
+  BACKROW_PIECES =
+    [Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook]
 
-  ROW_PIECE_COLORS = {
-    0 => :black, 1 => :black, 6 => :white, 7 => :white
-  }
+  ROW_COLORS =
+    { 0 => :black, 1 => :black, 6 => :white, 7 => :white }
 
-  PIECES_FROM_INPUT = {
-    "Queen" => Queen,
-    "Knight" => Knight,
-    "Rook" => Rook,
-    "Bishop" => Bishop
-  }
+  PIECES_FROM_INPUT =
+    { "Queen" => Queen, "Knight" => Knight,
+      "Rook" => Rook, "Bishop" => Bishop }
 
   def self.default_grid
-    grid = Array.new(8) { Array.new(8) }
-
-    grid.each_with_index do |row, row_idx|
-      row.each_with_index do |tile, col_idx|
-        pos = [row_idx, col_idx]
-          grid[row_idx][col_idx] = self.populate_tile(pos)
+    grid = empty_grid
+    grid.each_with_index do |row, row_i|
+      row.each_with_index do |tile, col_i|
+        grid[row_i][col_i] = fill_tile(row_i, col_i)
       end
     end
-
-    grid
   end
 
   def self.empty_grid
@@ -48,17 +38,13 @@ class Board
     pos.all? { |coord| coord.between?(0, 7) }
   end
 
-  def self.populate_tile(pos)
-    row, col = pos
-
+  def self.fill_tile(row, col)
     if row == 0 || row == 7
-      BACKROW_PIECES[col].new(pos, ROW_PIECE_COLORS[row])
+      BACKROW_PIECES[col].new([row, col], ROW_COLORS[row])
     elsif row == 1 || row == 6
-      Pawn.new(pos, ROW_PIECE_COLORS[row])
-    else
-      NullPiece.instance
+      Pawn.new([row, col], ROW_COLORS[row])
+    else NullPiece.instance
     end
-
   end
 
   def initialize(grid = Board.default_grid)
@@ -66,8 +52,16 @@ class Board
     pass_board_to_pieces unless grid == Board.empty_grid
   end
 
+  def change_piece_pos(start_pos, end_pos)
+    piece = self[start_pos]
+    self[start_pos] = NullPiece.instance
+    piece.position = end_pos
+    self[end_pos] = piece
+    piece.moved = true
+  end
+
   def checkmate?(color)
-    in_check?(color) && pieces_with_color(color).none? do |piece|
+    in_check?(color) && pieces_colored(color).none? do |piece|
       piece.valid_moves?
     end
   end
@@ -76,104 +70,83 @@ class Board
     new_board = Board.new(Board.empty_grid)
 
     new_board.each_with_index do |_, pos|
-      piece = self[pos]
-
-      new_board[pos] = Piece.dup(piece)
+      new_board[pos] = Piece.dup(self[pos])
       new_board[pos].board = new_board
     end
 
     new_board
   end
 
-  def each_with_index(&prc)
-
-    grid.each_with_index do |row, row_idx|
-      row.each_with_index do |_, col_idx|
-        prc.call(grid[row_idx][col_idx], [row_idx, col_idx])
-      end
+  def each_with_index
+    grid.each_with_index do |row, row_i|
+      row.each_with_index { |tile, col_i| yield(tile, [row_i, col_i]) }
     end
-
   end
 
   def empty?(pos)
-    self[pos].is_a?(NullPiece)
+    if pos.is_a?(Array)
+      self[pos].is_a?(NullPiece)
+    else grid[pos].all? { |tile| tile.is_a?(NullPiece) }
+    end
   end
 
   def in_check?(color)
-    position_of_king = king_position(color)
-    offense_color = self[position_of_king].opponent_color
+    king = Piece.find_piece(self, King, { color: color })
 
-    pieces_with_color(offense_color).any? do |piece|
-      piece.can_move?(king_position(color))
-    end
-
-  end
-
-  def king_position(desired_color)
-    each_with_index do |piece, pos|
-      return pos if piece.is_a?(King) && piece.color == desired_color
+    pieces_colored(king.opponent_color).any? do |piece|
+      piece.can_move?(king.position)
     end
   end
 
   def move_piece(start_pos, end_pos, current_color)
-    piece = self[start_pos]
+    Piece.validate_piece_move(end_pos, self[start_pos], current_color)
+    change_piece_pos(start_pos, end_pos)
 
-    raise NoPieceError.new if empty?(start_pos)
-    validate_correct_color(piece, current_color)
-    raise InvalidMoveError.new unless piece.can_move?(end_pos)
-    raise MoveChecksKingError.new unless piece.no_check_move?(end_pos)
-
-    self[start_pos] = NullPiece.instance
-
-    piece.current_position = end_pos
-    self[end_pos] = piece
+    if self[end_pos].is_a?(King) && ((start_pos[1] - end_pos[1]).abs == 2)
+      end_pos[1] - start_pos[1] > 0 ? dir = :right : dir = :left
+      if dir == :right
+        range = (7..7)
+        rook_end_pos = [end_pos[0], end_pos[1] - 1]
+      else
+        range = (0..0)
+        rook_end_pos = [end_pos[0], end_pos[1] + 1]
+      end
+      rook_to_move = Piece.find_piece(self, Rook, { row: end_pos[0], col_range: range })
+      change_piece_pos(rook_to_move.position, rook_end_pos)
+    end
   end
 
   def move_piece!(start_pos, end_pos)
-    piece = self[start_pos]
-
-    raise NoPieceError.new if empty?(start_pos)
-    raise InvalidMoveError.new unless piece.can_move?(end_pos)
-
-    piece.current_position = end_pos
-    self[start_pos] = NullPiece.instance
-    self[end_pos] = piece
-    piece.board = self
+    change_piece_pos(start_pos, end_pos)
   end
 
   def pass_board_to_pieces
-    self.each_with_index { |piece, _| piece.board = self }
+    each_with_index { |piece, _| piece.board = self }
   end
 
   def pawn_promotion_necessary?(pos)
     self[pos].pawn_promotion_necessary?
   end
 
-  def pieces_with_color(kings_color)
-    selected_pieces = []
+  def pieces_colored(color)
+    pieces = []
 
-    each_with_index do |piece, _|
-      selected_pieces << piece if piece.color == kings_color
+    grid.each do |row|
+      row.each { |tile| pieces << tile if tile.color == color }
     end
 
-    selected_pieces
+    pieces
   end
 
   def promote_pawn(piece_input, pos)
-    color = self[pos].color
+    if self[pos].pawn_promotion_necessary?
+      piece_class = PIECES_FROM_INPUT[piece_input]
+      raise WrongPieceInputError.new unless piece_class
 
-    piece_class = PIECES_FROM_INPUT[piece_input]
-    raise WrongPieceInputError.new unless piece_class
+      piece = piece_class.new(pos, self[pos].color)
 
-    piece = piece_class.new(pos, color)
-
-    self[pos] = piece
-    piece.board = self
-  end
-
-  def validate_correct_color(piece, current_color)
-    unless pieces_with_color(current_color).include?(piece)
-      raise WrongColorMoveError.new
+      self[pos] = piece
+      piece.board = self
     end
   end
 
@@ -184,7 +157,7 @@ class Board
 
   def []=(pos, piece)
     row, col = pos
-    self.grid[row][col] = piece
+    grid[row][col] = piece
   end
 
 end

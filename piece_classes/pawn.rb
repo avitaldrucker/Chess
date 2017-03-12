@@ -1,12 +1,13 @@
 require_relative 'piece'
 
 class Pawn < Piece
+
   attr_reader :initial_pos, :attack_deltas, :delta
 
-  def initialize(current_position, color)
+  def initialize(position, color)
     super
     @symbol = color == :white ? "♙" : "♟"
-    @initial_pos = current_position
+    @initial_pos = position
 
     if color == :black
       @attack_deltas = [[1, -1], [1, 1]]
@@ -19,7 +20,7 @@ class Pawn < Piece
 
   def attack_positions
     attack_positions = attack_deltas.map do |delta|
-      increment_position(current_position, delta)
+      increment_position(position, delta)
     end
 
     attack_positions.select do |pos|
@@ -34,7 +35,7 @@ class Pawn < Piece
     if valid_move?(one_space_move)
       possible_moves << one_space_move
 
-      if  current_position == initial_pos &&
+      if  position == initial_pos &&
           valid_move?(two_space_move) &&
           board.empty?(two_space_move)
             possible_moves << two_space_move
@@ -46,16 +47,16 @@ class Pawn < Piece
   end
 
   def one_space_move
-    increment_position(current_position, delta)
+    increment_position(position, delta)
   end
 
   def pawn_promotion_necessary?
-    self.color == :white && self.current_position[0] == 0 ||
-    self.color == :black && self.current_position[0] == 7
+    self.color == :white && self.position[0] == 0 ||
+    self.color == :black && self.position[0] == 7
   end
 
   def two_space_move
-    new_pos = increment_position(current_position, delta)
+    new_pos = increment_position(position, delta)
     increment_position(new_pos, delta)
   end
 
