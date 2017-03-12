@@ -2,6 +2,7 @@ require_relative 'board'
 require_relative 'human_player'
 require_relative 'cursor'
 require 'byebug'
+require './computer_player'
 
 class Game
 
@@ -12,7 +13,7 @@ class Game
     display = Display.new(@board)
 
     @player1 = HumanPlayer.new(player1, :white, display)
-    @player2 = HumanPlayer.new(player2, :black, display)
+    @player2 = ComputerPlayer.new(player2, :black, @board)
     @current_player = @player1
   end
 

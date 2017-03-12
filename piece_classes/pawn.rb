@@ -5,16 +5,17 @@ class Pawn < Piece
   attr_reader :initial_pos, :attack_deltas, :delta
   attr_accessor :moved_two_spaces
 
+  ATTACK_DELTAS = {
+    white: [[-1, -1], [-1, 1]],
+    black: [[1, -1], [1, 1]]
+  }
+
   def initialize(position, color)
     super
     @symbol = color == :white ? "♙" : "♟"
     @initial_pos = position
 
-    if color == :black
-      @attack_deltas = [[1, -1], [1, 1]]
-    else @attack_deltas = [[-1, -1], [-1, 1]]
-    end
-
+    @attack_deltas = ATTACK_DELTAS[color]
     @delta = color == :black ? [1, 0] : [-1, 0]
     @moved_two_spaces = false
   end
@@ -38,34 +39,33 @@ class Pawn < Piece
       possible_moves << two_space_move if two_space_move_possible?
     end
 
-
-
     possible_moves + attack_positions + en_passant_directions
   end
 
   def en_passant_directions
-    row, col = self.position
-    directions = []
+    row, col = position
+    dirs = []
 
-    return directions unless (self.color == :white && row == 3 ||
-    self.color == :black && row == 4)
-    row_move = self.color == :white ? -1 : 1
+    return dirs unless fifth_rank?
+    new_row = color == :white ? row - 1 : row + 1
+    l_col = col - 1
+    r_col = col + 1
 
-    left_piece = self.board[[row, col - 1]]
+    dirs << [new_row, l_col] if en_passant_capture?(board[[row, l_col]])
+    dirs << [new_row, r_col] if en_passant_capture?(board[[row, r_col]])
 
-    previous_piece_moved = self.board.previous_piece
+    dirs
+  end
 
-    if left_piece.is_a?(Pawn) && left_piece.moved_two_spaces && previous_piece_moved.position == left_piece.position
-      directions << [row + row_move, col - 1]
-    end
+  def fifth_rank?
+    self.color == :white && self.position[0] == 3 ||
+    self.color == :black && self.position[0] == 4
+  end
 
-    right_piece = self.board[[row, col + 1]]
-
-    if right_piece.is_a?(Pawn) && right_piece.moved_two_spaces && previous_piece_moved.position == right_piece.position
-      directions << [row + row_move, col + 1]
-    end
-
-    directions
+  def en_passant_capture?(piece)
+    piece.is_a?(Pawn) &&
+    piece.moved_two_spaces &&
+    self.board.previous_piece == piece.position
   end
 
   def moved_two_spaces?(start_pos)

@@ -190,4 +190,9 @@ class Board
     grid[row][col] = piece
   end
 
+  def display
+    grid_display = self.grid.map { |row| row.map { |el| el.symbol }.join("") }.join("\n")
+    print grid_display
+  end
+
 end
