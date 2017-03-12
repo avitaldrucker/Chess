@@ -12,14 +12,16 @@ class Piece
 
     board.each_with_index do |tile, pos|
       row, col = pos
-      if (tile && tile.is_a?(piece_class) &&
-        (!options[:row] || row == options[:row]) &&
-        (!options[:col_range] || options[:col_range].include?(col)) &&
-        (!options[:color] || options[:color] == tile.color))
+      if tile.is_a?(piece_class) && same?(options[:row], row) &&
+        same?(options[:pos], col) &&
+        same?(options[:color], tile.color)
         return tile
       end
     end
+  end
 
+  def self.same?(value, desired_value)
+    !value || value == desired_value
   end
 
   def self.dup(piece)

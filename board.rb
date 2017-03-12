@@ -10,6 +10,7 @@ require_relative 'piece_classes/rook'
 class Board
 
   attr_reader :grid
+  attr_accessor :captured, :previous_piece
 
   BACKROW_PIECES =
     [Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook]
@@ -50,14 +51,23 @@ class Board
   def initialize(grid = Board.default_grid)
     @grid = grid
     pass_board_to_pieces unless grid == Board.empty_grid
+    @captured = false
+    @previous_piece = nil
   end
 
   def change_piece_pos(start_pos, end_pos)
+    if !self[end_pos].is_a?(NullPiece)
+      self.captured = true
+    else
+      self.captured = false
+    end
+
     piece = self[start_pos]
     self[start_pos] = NullPiece.instance
     piece.position = end_pos
     self[end_pos] = piece
     piece.moved = true
+    self.previous_piece = piece
   end
 
   def checkmate?(color)
@@ -101,19 +111,39 @@ class Board
   def move_piece(start_pos, end_pos, current_color)
     Piece.validate_piece_move(end_pos, self[start_pos], current_color)
     change_piece_pos(start_pos, end_pos)
-
-    if self[end_pos].is_a?(King) && ((start_pos[1] - end_pos[1]).abs == 2)
-      end_pos[1] - start_pos[1] > 0 ? dir = :right : dir = :left
-      if dir == :right
-        range = (7..7)
-        rook_end_pos = [end_pos[0], end_pos[1] - 1]
-      else
-        range = (0..0)
-        rook_end_pos = [end_pos[0], end_pos[1] + 1]
-      end
-      rook_to_move = Piece.find_piece(self, Rook, { row: end_pos[0], col_range: range })
-      change_piece_pos(rook_to_move.position, rook_end_pos)
+    piece = self[end_pos]
+    if piece.is_a?(Pawn) && piece.moved_two_spaces?(start_pos)
+      piece.moved_two_spaces = true
+    elsif piece.is_a?(Pawn)
+      piece.moved_two_spaces = false
     end
+
+    if piece.is_a?(King) && piece.moved_two_spaces?(start_pos)
+      move_rook_for_castling(start_pos, end_pos)
+    end
+
+    if en_passant?(start_pos, end_pos)
+      captured_pawn_pos = [start_pos[0], end_pos[1]]
+      self[captured_pawn_pos] = NullPiece.instance
+    end
+  end
+
+  def en_passant?(start_pos, end_pos)
+    piece = self[end_pos]
+    piece.is_a?(Pawn) && start_pos[1] != end_pos[1] && !self.captured
+  end
+
+  def move_rook_for_castling(king_start_pos, king_end_pos)
+    if end_pos[1] - start_pos[1] > 0
+      pos = [end_pos[0], 7]
+      rook_end_pos = [end_pos[0], end_pos[1] - 1]
+    else
+      col = [end_pos[0], 0]
+      rook_end_pos = [end_pos[0], end_pos[1] + 1]
+    end
+
+    rook_to_move = Piece.find_piece(self, Rook, { pos: pos })
+    change_piece_pos(rook_to_move.position, rook_end_pos)
   end
 
   def move_piece!(start_pos, end_pos)

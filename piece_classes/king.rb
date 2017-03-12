@@ -44,4 +44,8 @@ class King < Piece
     moves
   end
 
+  def moved_two_spaces?(start_pos)
+    (self.position[1] - start_pos[1]).abs == 2
+  end
+
 end
