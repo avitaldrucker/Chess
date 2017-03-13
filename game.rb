@@ -74,8 +74,11 @@ if __FILE__ == $PROGRAM_NAME
     puts "#{name1.capitalize}, would you like to play against a human or computer?"
     puts "Type 'human' or 'computer'."
     player2_class_input = gets.chomp
+    unless ['human', 'computer'].include?(player2_class_input)
+      raise "Wrong input. Please type 'human' or 'computer'."
+    end
   rescue => e
-    puts "Wrong input. Please type 'human' or 'computer'."
+    puts e
     retry
   end
 

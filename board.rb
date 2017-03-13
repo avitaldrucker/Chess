@@ -1,4 +1,4 @@
-\require_relative 'piece_classes/piece'
+require_relative 'piece_classes/piece'
 require_relative 'piece_classes/bishop'
 require_relative 'piece_classes/king'
 require_relative 'piece_classes/knight'
