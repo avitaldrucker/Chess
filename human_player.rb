@@ -1,7 +1,7 @@
 require_relative 'display'
 
 class HumanPlayer
-  
+
   attr_reader :name, :color, :display
 
   def initialize(name, color, display)
@@ -25,6 +25,7 @@ class HumanPlayer
       pos = display.get_input
     end
 
+    display.render(name)
     pos
   end
 

@@ -56,11 +56,7 @@ class Board
   end
 
   def change_piece_pos(start_pos, end_pos)
-    if !self[end_pos].is_a?(NullPiece)
-      self.captured = true
-    else
-      self.captured = false
-    end
+    self.captured = empty?(end_pos) ? false : true
 
     piece = self[start_pos]
     self[start_pos] = NullPiece.instance
@@ -112,38 +108,25 @@ class Board
     Piece.validate_piece_move(end_pos, self[start_pos], current_color)
     change_piece_pos(start_pos, end_pos)
     piece = self[end_pos]
-    if piece.is_a?(Pawn) && piece.moved_two_spaces?(start_pos)
-      piece.moved_two_spaces = true
-    elsif piece.is_a?(Pawn)
-      piece.moved_two_spaces = false
-    end
+    piece.check_if_moved_two_spaces(start_pos) if piece.is_a?(Pawn)
 
     if piece.is_a?(King) && piece.moved_two_spaces?(start_pos)
-      move_rook_for_castling(start_pos, end_pos)
+      move_rook_for_castling([start_pos, end_pos])
     end
+  end
 
-    if en_passant?(start_pos, end_pos)
+  def check_if_en_passant(start_pos, end_pos)
+    piece = self[end_pos]
+    if piece.is_a?(Pawn) && start_pos[1] != end_pos[1] && !self.captured
       captured_pawn_pos = [start_pos[0], end_pos[1]]
       self[captured_pawn_pos] = NullPiece.instance
     end
   end
 
-  def en_passant?(start_pos, end_pos)
-    piece = self[end_pos]
-    piece.is_a?(Pawn) && start_pos[1] != end_pos[1] && !self.captured
-  end
-
-  def move_rook_for_castling(king_start_pos, king_end_pos)
-    if king_end_pos[1] - king_start_pos[1] > 0
-      pos = [king_end_pos[0], 7]
-      rook_end_pos = [king_end_pos[0], king_end_pos[1] - 1]
-    else
-      pos = [king_end_pos[0], 0]
-      rook_end_pos = [king_end_pos[0], king_end_pos[1] + 1]
-    end
-
-    rook_to_move = Piece.find_piece(self, Rook, { pos: pos })
-    change_piece_pos(rook_to_move.position, rook_end_pos)
+  def move_rook_for_castling(king_positions)
+    rook_start, rook_end = Rook.castling_positions(king_positions)
+    rook_to_move = Piece.find_piece(self, Rook, { pos: rook_start })
+    change_piece_pos(rook_to_move.position, rook_end)
   end
 
   def move_piece!(start_pos, end_pos)
@@ -188,11 +171,6 @@ class Board
   def []=(pos, piece)
     row, col = pos
     grid[row][col] = piece
-  end
-
-  def display
-    grid_display = self.grid.map { |row| row.map { |el| el.symbol }.join("") }.join("\n")
-    print grid_display
   end
 
 end

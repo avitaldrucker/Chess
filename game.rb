@@ -1,19 +1,24 @@
 require_relative 'board'
 require_relative 'human_player'
 require_relative 'cursor'
-require 'byebug'
 require './computer_player'
 
 class Game
 
   attr_accessor :current_player
 
-  def initialize(player1, player2)
+  def initialize(player1, player2, computer)
     @board = Board.new
     display = Display.new(@board)
 
     @player1 = HumanPlayer.new(player1, :white, display)
-    @player2 = ComputerPlayer.new(player2, :black, @board)
+
+    if computer
+      @player2 = ComputerPlayer.new(:black, @board, display)
+    else
+      @player2 = HumanPlayer.new(player2, :black, display)
+    end
+
     @current_player = @player1
   end
 
@@ -65,7 +70,23 @@ if __FILE__ == $PROGRAM_NAME
   system('clear')
   puts "Player 1, type your name and hit enter. Your pieces are white."
   name1 = gets.chomp
-  puts "Player 2, type your name and hit enter. Your pieces are black."
-  name2 = gets.chomp
-  Game.new(name1, name2).play
+  begin
+    puts "#{name1.capitalize}, would you like to play against a human or computer?"
+    puts "Type 'human' or 'computer'."
+    player2_class_input = gets.chomp
+  rescue => e
+    puts "Wrong input. Please type 'human' or 'computer'."
+    retry
+  end
+
+  player2_class = case player2_class_input
+  when "human"
+    computer = false
+    puts "Player 2, type your name and hit enter. Your pieces are black."
+    name2 = gets.chomp
+  when "computer"
+    computer = true
+  end
+
+  Game.new(name1, name2, computer).play
 end

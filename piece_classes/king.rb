@@ -1,6 +1,5 @@
 require_relative 'piece';
 require_relative '../stepping_piece'
-require 'byebug'
 
 class King < Piece
 
@@ -33,7 +32,6 @@ class King < Piece
     else
       [self.position[0], (self.position[1] + 1)...7]
     end
-
   end
 
   def skipped_spots_safe?
@@ -46,9 +44,7 @@ class King < Piece
   def move_dirs
     moves = TRADITIONAL_MOVE_DIRS
     moves = moves + [[0, -2]] if castling_possible?(:left)
-    # debugger unless castling_possible?(:left)
     moves = moves + [[0, 2]] if castling_possible?(:right)
-    # debugger unless castling_possible?(:left)
 
     moves
   end

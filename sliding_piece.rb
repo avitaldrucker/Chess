@@ -1,5 +1,3 @@
-require 'byebug'
-
 module SlidingPiece
 
   DIRECTIONS = {
@@ -15,8 +13,6 @@ module SlidingPiece
 
   def moves
     positions = []
-
-
 
     move_dirs.each do |direction|
       delta = DIRECTIONS[direction]

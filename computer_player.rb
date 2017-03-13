@@ -1,38 +1,41 @@
 require_relative './chess_node'
-require 'byebug'
 
 class ComputerPlayer
 
-  attr_reader :board, :color
+  attr_reader :board, :color, :display, :name
 
-  def initialize(name, color, board)
-    @name = name
+  def initialize(color, board, display)
+    @name = "ChessBot"
     @color = color
     @board = board
+    @display = display
   end
 
   def play_turn
-    game_state_node = ChessNode.new(self.board, self.color) #0(1)
-    max_nodes = []
-    max_rating = nil
-    start = Time.now
+    display.render(name)
+    result = best_moves.sample.move
+    result
+  end
 
-    game_state_node.children.each do |child_node|
-      child_rating = child_node.rating
-      if max_nodes.empty?
-        max_nodes << child_node
-        max_rating = child_rating
-      elsif max_rating < child_rating
-        max_nodes = [child_node]
-        max_rating = child_rating
-      elsif max_rating == child_rating
-        max_nodes << child_node
+  def best_moves
+    max_nodes = nil
+    max_rating = nil
+
+    ChessNode.new(board, color).children.each do |node|
+      rating = node.rating
+      if max_nodes.nil? || max_rating < rating
+        max_nodes = [node]
+        max_rating = rating
+      elsif max_rating == rating
+        max_nodes << node
       end
-      # puts "computer player possible move: #{child_node.move}"
-      # puts "rating of that move: #{child_rating}"
     end
 
-    max_nodes.sample.move
+    max_nodes
+  end
+
+  def prompt_promote_piece(pos)
+    ["Queen", pos]
   end
 
 

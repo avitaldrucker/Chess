@@ -6,7 +6,6 @@ require_relative 'piece_classes/nullpiece'
 require_relative 'piece_classes/pawn'
 require_relative 'piece_classes/queen'
 require_relative 'piece_classes/rook'
-require 'byebug'
 
 class ChessNode
 
@@ -31,28 +30,29 @@ class ChessNode
     @same_color_pieces ||= board.pieces_colored()
   end
 
+  def checkmate_rating
+    [:white, :black].each do |color|
+     if board.checkmate?(color)
+       return next_mover_color == color ? -1000 : 1000
+     end
+    end
+
+    nil
+  end
+
   def rating(depth = 0)
+    return checkmate_rating if checkmate_rating
 
-    if board.checkmate?(:white)
-      next_mover_color == :white ? -1000 : 1000
+    if depth >= 1
+      return pieces_sum(toggle_mark) - pieces_sum(next_mover_color)
     end
-    if board.checkmate?(:black)
-      next_mover_color == :black ? -1000 : 1000
-    end
+    result = max_children_rating(depth)
+    result * -1
+  end
 
-    if depth >= 1 #(n)
-      sum = 0
-      board.pieces_colored(toggle_mark).each do |piece|
-        sum += PIECE_VALUES[piece.class]
-      end
-      board.pieces_colored(next_mover_color).each do |piece|
-        sum -= PIECE_VALUES[piece.class]
-      end
-      return sum
-    end
-
-    max_rating = nil
+  def max_children_rating(depth)
     max_node = nil
+    max_rating = nil
 
     children.each do |node|
       node_rating = node.rating(depth + 1)
@@ -62,27 +62,32 @@ class ChessNode
       end
     end
 
-    max_rating * -1
-    # children.map { |node| node.rating(depth + 1, rook) }.max * -1 #O(n^3)
+    max_rating
   end
 
-  def children #O(n)
-    # return @children if @children
+  def pieces_sum(color)
+    sum = 0
+
+    board.pieces_colored(color).each do |piece|
+      sum += PIECE_VALUES[piece.class]
+    end
+
+    sum
+  end
+
+  def children
     nodes = []
 
-    board.pieces_colored(self.next_mover_color).each do |piece| #O(1)
-      piece.moves.each do |end_pos| #O(n)
-        new_board = board.dup #O(1)
-        new_board.change_piece_pos(piece.position, end_pos) #O(1)
-        nodes << ChessNode.new(new_board, toggle_mark, [piece.position, end_pos]) #O(1)
+    board.pieces_colored(next_mover_color).each do |piece|
+      piece.valid_moves.each do |end_pos|
+        new_board = board.dup
+        new_board.move_piece(piece.position, end_pos, next_mover_color)
+        nodes << ChessNode.new(new_board, toggle_mark, [piece.position, end_pos])
       end
     end
 
-    @children = nodes
-    @children
+    nodes
   end
-
-
 
   def toggle_mark
     next_mover_color == :white ? :black : :white

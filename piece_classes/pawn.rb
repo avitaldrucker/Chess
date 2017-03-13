@@ -1,4 +1,5 @@
 require_relative 'piece'
+require_relative './nullpiece'
 
 class Pawn < Piece
 
@@ -34,7 +35,7 @@ class Pawn < Piece
   def moves
     possible_moves = []
 
-    if valid_move?(one_space_move)
+    if valid_move?(one_space_move) && board.empty?(one_space_move)
       possible_moves << one_space_move
       possible_moves << two_space_move if two_space_move_possible?
     end
@@ -58,18 +59,22 @@ class Pawn < Piece
   end
 
   def fifth_rank?
-    self.color == :white && self.position[0] == 3 ||
-    self.color == :black && self.position[0] == 4
+    color == :white && position[0] == 3 ||
+    color == :black && position[0] == 4
   end
 
   def en_passant_capture?(piece)
     piece.is_a?(Pawn) &&
     piece.moved_two_spaces &&
-    self.board.previous_piece == piece.position
+    board.previous_piece == piece.position
   end
 
-  def moved_two_spaces?(start_pos)
-    (self.position[0] - start_pos[0]).abs == 2
+  def check_if_moved_two_spaces(start_pos)
+    if (position[0] - start_pos[0]).abs == 2
+      self.moved_two_spaces = true
+    else
+      self.moved_two_spaces = false
+    end
   end
 
   def two_space_move_possible?
@@ -83,8 +88,8 @@ class Pawn < Piece
   end
 
   def pawn_promotion_necessary?
-    self.color == :white && self.position[0] == 0 ||
-    self.color == :black && self.position[0] == 7
+    color == :white && position[0] == 0 ||
+    color == :black && position[0] == 7
   end
 
   def two_space_move
