@@ -37,7 +37,7 @@ end
 
 ###AI###
 
-This game offers the option to play against a computer AI. The game implements a computer AI through the minimax algorithm and through creating a tree based off of the available moves for the computer's pieces. Through the minimax algorithm and a tree structure, the game assumes that any node in the tree, the computer player will play to maximize its advantage, and the human player will play to maximize his/her advantage. These assumptions allow the computer player to play as well as it can and guard itself against attacks by the human player.
+This game offers the option to play against a computer AI. The game implements a computer AI through the minimax algorithm and through creating a tree based off of the available moves for the computer's pieces. The game assumes that for any node in the tree, the computer player will play to maximize its advantage, and the human player will play to maximize his/her advantage. These assumptions allow the computer player to play as well as it can and guard itself against attacks by the human player.
 
 For each a computer player's piece can take, a node is created. The game dups the board and executes this move on that board. It then looks at the children of the current node, and creates child nodes that reflect the human player's moves. The tree of hypothetical game states has a height of three: the current game state is the root node, the first-tier children are possible moves by the computer player, and the third tier-children are the human player's hypothetical responses.
 
@@ -72,17 +72,21 @@ def max_children_rating(depth)
 end
 ```
 
-###More Complex Moves: Pawn Promotion, Castling, and En Passant###
+###More Complex Moves###
 
-Pawn promotion, castling, and en passant are all supported and possible in the chess game.
+The `Board` and relevant `Piece` classes work together to implement more complex chess moves, ensuring separation of concerns: the Piece class handles the details of validating and providing the move, and the Board executes the move.
 
-The game implements pawn promotion through an instance method in the `Pawn` class that checks whether pawn promotion is necessary - in other words, whether a pawn is on its eight rank on the board. If so, the game will prompt the human player or the computer player to select a piece to change the pawn into. The board is updated with that piece.
+####Pawn Promotion####
+This game implements pawn promotion through an instance method in the `Pawn` class that checks whether pawn promotion is necessary - in other words, whether a pawn is on its eight rank on the board. If so, the game will prompt the player to select a piece to transform the pawn into. The board is updated with that piece.
 
-The `Board` and `King` classes are responsible for castling functionality. The King provides as a valid move two spaces left or right, under the conditions specified by the `King#castling_possible?` method. If a player chooses to castle, the Board will ensure that the castling is permissible, and will move the king and update the rook accordingly, depending on the direction of the castling.
+####Castling####
+The `Board` and `King` classes are responsible for castling functionality. The King provides as a valid move two spaces left or right, if the conditions specified by the `King#castling_possible?` method are fulfilled. If a player chooses to castle, the Board will ensure that the castling is permissible, and will move the king and update the rook accordingly, depending on the direction of the castling.
 
+####En Passant####
+En passant is implemented in the `Pawn` class. `Pawn#moves` includes results of `Pawn#en_passant_directions`. This method returns end positions on the board corresponding to en passant moves if the conditions specified by `Pawn#en_passant_capture?` are fulfilled. The board checks whether a move is en passant in its `Board#move_piece` method by calling the helper method `Board#check_if_en_passant`. If the move is en passant, the board will move the offensive piece properly and remove the captured pawn from the board.
 
 ###Future Directions for the Project###
-- [ ] Functionality to check whether a win by any player is possible in the game
+- [ ] Functionality to check stalemate
 - [ ] Frontend through React, with state managed by Redux. This involves reprogramming the game in JavaScript.
 - [ ] Improve AI so that it can strategize more steps ahead and more quickly checkmate.
 - [X] Pawn promotion, castling, and en passant
