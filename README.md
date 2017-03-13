@@ -35,7 +35,55 @@ end
 
 `Board#move_piece!` makes a move without checking whether a move leads to a king being checked, whereas `Board#move_piece`, which actually moves the piece on the played board, does.
 
+###AI###
+
+This game offers the option to play against a computer AI. The game implements a computer AI through the minimax algorithm and through creating a tree based off of the available moves for the computer's pieces. Through the minimax algorithm and a tree structure, the game assumes that any node in the tree, the computer player will play to maximize its advantage, and the human player will play to maximize his/her advantage. These assumptions allow the computer player to play as well as it can and guard itself against attacks by the human player.
+
+For each a computer player's piece can take, a node is created. The game dups the board and executes this move on that board. It then looks at the children of the current node, and creates child nodes that reflect the human player's moves. The tree of hypothetical game states has a height of three: the current game state is the root node, the first-tier children are possible moves by the computer player, and the third tier-children are the human player's hypothetical responses.
+
+The computer player decides which move to implement by selecting the node in the first-tier of the tree that has the highest ranking. Ranking is calculated through the difference in points between the computer player and the human player; points are calculated by the number of pieces each player has. Pieces are weighted by their value: a pawn is worth one point, and a king is worth 100 points. The game recurses through the nodes, assigning to each node the highest ranking of the node's children.
+
+Below are some of the instance methods of the `ChessNode` class that are relevant to ranking nodes:
+
+```ruby
+def rating(depth = 0)
+  return checkmate_rating if checkmate_rating
+
+  if depth >= 1
+    return pieces_sum(toggle_mark) - pieces_sum(next_mover_color)
+  end
+  result = max_children_rating(depth)
+  result * -1
+end
+
+def max_children_rating(depth)
+  max_node = nil
+  max_rating = nil
+
+  children.each do |node|
+    node_rating = node.rating(depth + 1)
+    if max_node.nil? || max_rating < node_rating
+      max_node = node
+      max_rating = node_rating
+    end
+  end
+
+  max_rating
+end
+```
+
+###More Complex Moves: Pawn Promotion, Castling, and En Passant###
+
+Pawn promotion, castling, and en passant are all supported and possible in the chess game.
+
+The game implements pawn promotion through an instance method in the `Pawn` class that checks whether pawn promotion is necessary - in other words, whether a pawn is on its eight rank on the board. If so, the game will prompt the human player or the computer player to select a piece to change the pawn into. The board is updated with that piece.
+
+The `Board` and `King` classes are responsible for castling functionality. The King provides as a valid move two spaces left or right, under the conditions specified by the `King#castling_possible?` method. If a player chooses to castle, the Board will ensure that the castling is permissible, and will move the king and update the rook accordingly, depending on the direction of the castling.
+
+
 ###Future Directions for the Project###
-- [ ] I plan to implement a frontend for this project through React, with state managed by Redux. This involves reprogramming the game in JavaScript.
-- [ ] I also plan to implement a computer AI to play against a player, using a minimax algorithm and tree nodes.
-- [ ] Other future features include pawn promotion, castling, en passant, and functionality to check whether a win by any player is possible in the game.
+- [ ] Functionality to check whether a win by any player is possible in the game
+- [ ] Frontend through React, with state managed by Redux. This involves reprogramming the game in JavaScript.
+- [ ] Improve AI so that it can strategize more steps ahead and more quickly checkmate.
+- [X] Pawn promotion, castling, and en passant
+- [X] Computer AI
