@@ -52,8 +52,8 @@ def rating(depth = 0)
   if depth >= 1
     return pieces_sum(toggle_mark) - pieces_sum(next_mover_color)
   end
-  result = max_children_rating(depth)
-  result * -1
+
+  max_children_rating(depth) * -1
 end
 
 def max_children_rating(depth)
@@ -73,7 +73,6 @@ end
 ```
 
 ###More Complex Moves###
-
 The `Board` and relevant `Piece` classes work together to implement more complex chess moves, ensuring separation of concerns: the Piece class handles the details of validating and providing the move, and the Board executes the move.
 
 ####Pawn Promotion####
@@ -88,6 +87,6 @@ En passant is implemented in the `Pawn` class. `Pawn#moves` includes results of 
 ###Future Directions for the Project###
 - [ ] Functionality to check stalemate
 - [ ] Frontend through React, with state managed by Redux. This involves reprogramming the game in JavaScript.
-- [ ] Improve AI so that it can strategize more steps ahead and more quickly checkmate.
+- [ ] An AI that can strategize more steps ahead and more quickly checkmate.
 - [X] Pawn promotion, castling, and en passant
 - [X] Computer AI

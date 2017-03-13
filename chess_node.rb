@@ -46,8 +46,8 @@ class ChessNode
     if depth >= 1
       return pieces_sum(toggle_mark) - pieces_sum(next_mover_color)
     end
-    result = max_children_rating(depth)
-    result * -1
+
+    max_children_rating(depth) * -1
   end
 
   def max_children_rating(depth)
