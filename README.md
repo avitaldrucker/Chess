@@ -1,13 +1,13 @@
-#Chess#
+# Chess #
 
-##How to Run the Game##
+## How to Run the Game ##
 1. Clone this repository, or download it as a ZIP.
 2. Navigate to the Chess directory where you downloaded the repository.
 3. In your terminal, type and enter `ruby game.rb`.
 
 ![Screenshot](/docs/chess_screenshot.png)
 
-##Technical Implementation Details##
+## Technical Implementation Details ##
 
 The game logic makes use of Game, Board, and Display classes, as well as a Piece class. The various chess pieces inherit from Piece.
 
@@ -35,7 +35,7 @@ end
 
 `Board#move_piece!` makes a move without checking whether a move leads to a king being checked, whereas `Board#move_piece`, which actually moves the piece on the played board, does.
 
-###AI###
+### AI ###
 
 This game offers the option to play against a computer AI. The game implements a computer AI through the minimax algorithm and through creating a tree based off of the available moves for the computer's pieces. The game assumes that for any node in the tree, the computer player will play to maximize its advantage, and the human player will play to maximize his/her advantage. These assumptions allow the computer player to play as well as it can and guard itself against attacks by the human player.
 
@@ -72,19 +72,19 @@ def max_children_rating(depth)
 end
 ```
 
-###More Complex Moves###
+### More Complex Moves ###
 The `Board` and relevant `Piece` classes work together to implement more complex chess moves, ensuring separation of concerns: the Piece class handles the details of validating and providing the move, and the Board executes the move.
 
-####Pawn Promotion####
+#### Pawn Promotion ####
 This game implements pawn promotion through an instance method in the `Pawn` class that checks whether pawn promotion is necessary - in other words, whether a pawn is on its eight rank on the board. If so, the game will prompt the player to select a piece to transform the pawn into. The board is updated with that piece.
 
-####Castling####
+#### Castling ####
 The `Board` and `King` classes are responsible for castling functionality. The King provides as a valid move two spaces left or right, if the conditions specified by the `King#castling_possible?` method are fulfilled. If a player chooses to castle, the Board will ensure that the castling is permissible, and will move the king and update the rook accordingly, depending on the direction of the castling.
 
-####En Passant####
+#### En Passant ####
 En passant is implemented in the `Pawn` class. `Pawn#moves` includes results of `Pawn#en_passant_directions`. This method returns end positions on the board corresponding to en passant moves if the conditions specified by `Pawn#en_passant_capture?` are fulfilled. The board checks whether a move is en passant in its `Board#move_piece` method by calling the helper method `Board#check_if_en_passant`. If the move is en passant, the board will move the offensive piece properly and remove the captured pawn from the board.
 
-###Future Directions for the Project###
+### Future Directions for the Project ###
 - [ ] Functionality to check stalemate
 - [ ] Frontend through React, with state managed by Redux. This involves reprogramming the game in JavaScript.
 - [ ] An AI that can strategize more steps ahead and more quickly checkmate.
