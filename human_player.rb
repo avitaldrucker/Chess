@@ -29,6 +29,11 @@ class HumanPlayer
     pos
   end
 
+  def notify_game_end(name)
+    display.render
+    puts "#{name} wins!"
+  end
+
   def prompt_promote_piece(pos)
     puts "What piece would you like to promote your pawn at #{pos} to?"
     puts "Type Queen, Knight, Rook, or Bishop, and then press enter."

@@ -3,7 +3,7 @@ require_relative 'cursor'
 require_relative 'board'
 
 class Display
-  
+
   attr_reader :board, :cursor
 
   def initialize(board)
@@ -29,9 +29,9 @@ class Display
     " #{piece.symbol} ".colorize(background: background_color(pos))
   end
 
-  def render(name)
+  def render(name = nil)
     system('clear')
-    puts "Make your move, #{name}"
+    puts "Make your move, #{name}" if name
 
     board.each_with_index do |piece, pos|
       print piece_display(piece, pos)

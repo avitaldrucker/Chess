@@ -6,6 +6,7 @@ require_relative 'piece_classes/nullpiece'
 require_relative 'piece_classes/pawn'
 require_relative 'piece_classes/queen'
 require_relative 'piece_classes/rook'
+require 'byebug'
 
 class ChessNode
 
@@ -42,7 +43,6 @@ class ChessNode
 
   def rating(depth = 0)
     return checkmate_rating if checkmate_rating
-
     if depth >= 1
       return pieces_sum(toggle_mark) - pieces_sum(next_mover_color)
     end
@@ -61,8 +61,7 @@ class ChessNode
         max_rating = node_rating
       end
     end
-
-    max_rating
+    max_rating || -1000
   end
 
   def pieces_sum(color)
@@ -81,11 +80,10 @@ class ChessNode
     board.pieces_colored(next_mover_color).each do |piece|
       piece.valid_moves.each do |end_pos|
         new_board = board.dup
-        new_board.move_piece(piece.position, end_pos, next_mover_color)
+          new_board.move_piece(piece.position, end_pos, next_mover_color)
         nodes << ChessNode.new(new_board, toggle_mark, [piece.position, end_pos])
       end
     end
-
     nodes
   end
 

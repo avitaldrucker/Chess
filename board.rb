@@ -67,7 +67,7 @@ class Board
   end
 
   def checkmate?(color)
-    in_check?(color) && pieces_colored(color).none? do |piece|
+    pieces_colored(color).none? do |piece|
       piece.valid_moves?
     end
   end
@@ -171,6 +171,16 @@ class Board
   def []=(pos, piece)
     row, col = pos
     grid[row][col] = piece
+  end
+
+  def display
+    self.grid.each do |row|
+      row.each do |tile|
+        print tile.symbol
+      end
+      puts ""
+    end
+    nil
   end
 
 end

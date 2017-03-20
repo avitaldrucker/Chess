@@ -6,6 +6,7 @@ require './computer_player'
 class Game
 
   attr_accessor :current_player
+  attr_reader :player1, :player2
 
   def initialize(player1, player2, computer)
     @board = Board.new
@@ -28,7 +29,7 @@ class Game
 
   def play
     play_turn until over?
-    puts "#{winner.name} wins!"
+    player1.notify_game_end(winner.name)
   end
 
   def play_turn

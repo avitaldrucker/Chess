@@ -13,15 +13,15 @@ class ComputerPlayer
 
   def play_turn
     display.render(name)
-    result = best_moves.sample.move
-    result
+    best_moves.sample.move
   end
 
   def best_moves
     max_nodes = nil
     max_rating = nil
 
-    ChessNode.new(board, color).children.each do |node|
+    children = ChessNode.new(board, color).children
+    children.each do |node|
       rating = node.rating
       if max_nodes.nil? || max_rating < rating
         max_nodes = [node]

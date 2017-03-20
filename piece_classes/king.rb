@@ -43,8 +43,8 @@ class King < Piece
 
   def move_dirs
     moves = TRADITIONAL_MOVE_DIRS
-    moves = moves + [[0, -2]] if castling_possible?(:left)
-    moves = moves + [[0, 2]] if castling_possible?(:right)
+    moves = moves + [[0, -2]] if self.color === :white && castling_possible?(:left)
+    moves = moves + [[0, 2]] if self.color === :white && castling_possible?(:right)
 
     moves
   end
